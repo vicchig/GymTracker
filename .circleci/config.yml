@@ -7,6 +7,7 @@ jobs:
   unit-test:
     executor: # comes from the orb
       name: android/android-docker
+      tag: 2024.01.1-ndk
     
     steps:
       - checkout 
@@ -34,6 +35,7 @@ jobs:
     executor:
       name: android/android-machine
       resource-class: large #change to xlarge if not enough/too slow
+      tag: 2024.01.1-ndk
 
     steps:
       - checkout
@@ -55,6 +57,7 @@ jobs:
     executor:
       name: android/android-machine
       resource-class: large
+      tag: 2024.01.1-ndk
     steps:
       - checkout
       - android/restore-gradle-cache
@@ -68,7 +71,7 @@ jobs:
 
 
 workflows:
-  test-and-build:
+  test-and-build-workflow:
     jobs:
       - unit-test
       - android-test:
