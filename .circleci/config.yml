@@ -12,7 +12,7 @@ jobs:
       - checkout 
       - android/restore-gradle-cache # restore deps and build artifacts
       - android/run-tests:
-        test-command: ./gradlew testDebug
+          test-command: ./gradlew testDebug
       - android/save-gradle-cache
       - run:
           name: Save unit test results
@@ -38,64 +38,61 @@ jobs:
     steps:
       - checkout
       - android/start-emulator-and-run-tests:
-        test-command: ./gradlew connectedDebugAndroidTest
-        system-image: << parameters.system-image >>
+          test-command: ./gradlew connectedDebugAndroidTest
+          system-image: << parameters.system-image >>
       - run:
-        name: Save test results
-        command: |
-          mkdir -p ~/test-results/junit/
-          find . -type f -regex ".*/build/outputs/androidTest-results/.*xml" -exec cp {} ~/test-results/junit/ \;
-        when: always
+          name: Save test results
+          command: |
+            mkdir -p ~/test-results/junit/
+            find . -type f -regex ".*/build/outputs/androidTest-results/.*xml" -exec cp {} ~/test-results/junit/ \;
+          when: always
       - store_test_results:
           path: ~/test-results
       - store_artifacts:
           path: ~/test-results/junit
 
   release-build:
-    name: android/android-machine
-    resource-class: large
-  steps:
-    - checkout
-    - android/restore-gradle-cache
-    - android/restore-build-cache
-    - run:
-        name: Assemble release build
-        command: |
-          ./gradlew assembleRelease
-    - store_artifacts:
-        path: app/build/outputs/apk/release
+    executor:
+      name: android/android-machine
+      resource-class: large
+    steps:
+      - checkout
+      - android/restore-gradle-cache
+      - android/restore-build-cache
+      - run:
+          name: Assemble release build
+          command: |
+            ./gradlew assembleRelease
+      - store_artifacts:
+          path: app/build/outputs/apk/release
 
 
 workflows:
   test-and-build:
     jobs:
-    - unit-test
-    - android-test: # commits to any branch will not trigger runs of this job on all devices
-      filters: 
-        branches:
-          ignore: main
-    - android-test: # commits to main branch will run the full matrix of devices
-      matrix:
-        alias: android-test-all
-        parameters:
-          system-image:
-            - system-images;android-30;google_apis;x86
-            - system-images;android-29;google_apis;x86
-            - system-images;android-28;google_apis;x86
-            - system-images;android-27;google_apis;x86
-            - system-images;android-26;google_apis;x86
-            - system-images;android-26;google_apis;x86
-            - system-images;android-26;google_apis;x86
-            - system-images;android-26;google_apis;x86
-      name: android-test-<<matrix.system-iamge>>
-      filters:
-        branches:
-          only: main 
+      - unit-test
+      - android-test:
+          matrix:
+            alias: android-test-all
+            parameters:
+              system-image:
+                - system-images;android-30;google_apis;x86
+                - system-images;android-29;google_apis;x86
+                - system-images;android-28;google_apis;x86
+                - system-images;android-27;google_apis;x86
+                - system-images;android-26;google_apis;x86
+                - system-images;android-26;google_apis;x86
+                - system-images;android-26;google_apis;x86
+                - system-images;android-26;google_apis;x86
+          name: android-test-<<matrix.system-image>>
+          filters:
+            branches:
+              only: main
     
-    - release-build:
-        requires:
-          - unit-test
-          - android-test-all # instrumentation tests ran on emulator
-        filters:
-          branches:
-            only: main
+      - release-build:
+          requires:
+            - unit-test
+            - android-test-all # instrumentation tests ran on emulator
+          filters:
+            branches:
+              only: main
