@@ -3,20 +3,46 @@ version: 2.1
 orbs:
   android: circleci/android@2.4.0
 
+default-keys: &default-keys
+  working_directory: ~/repo
+  
 jobs:
+  setup:
+    <<: *default-keys
+    steps:
+      - run:
+          name: Download cc-test-reporter
+          command: | 
+            mkdir -p tmp
+            curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./tmp/cc-test-reporter
+            chmod +x ./tmp/cc-test-reporter
+      - persist_to_workspace:
+          root: tmp
+          paths:
+            - cc-test-reporter
+
+  upload-test-coverage:
+    environment: 
+      CC_TEST_REPORTER_ID: 967f3e97d9f6a74d6a00ad70ae7b3cfae1aa3facb40d05dd13612ac5cd54cd5c
+
   unit-test:
+    <<: *default-keys
     executor: # comes from the orb
       name: android/android-docker
       tag: 2024.01.1-ndk
     
     steps:
       - checkout 
+      - attach_workspace:
+          at: ~/repo/tmp
       - android/restore-gradle-cache # restore deps and build artifacts
       - run:
           name: update gradlew permissions
           command: sudo chmod +x gradlew
       - android/run-tests:
-          test-command: ./gradlew testDebug
+          test-command: |
+            ./gradlew testDebug
+            ./tpm/cc-test-reporter format-coverage -t simplecov -o ./tpm/codeclimate.unittest.json coverage/unittest/.resultset.json
       - android/save-gradle-cache
       - run:
           name: Save unit test results
@@ -31,10 +57,12 @@ jobs:
 
   # for instrumentation tests
   android-test:
+    <<: *default-keys
     parameters:
       system-image:
         type: string
         default: system-images;android-30;google_apis;x86
+
     executor:
       name: android/android-machine
       resource-class: large #change to xlarge if not enough/too slow
@@ -42,6 +70,7 @@ jobs:
 
     steps:
       - checkout
+
       - run:
           name: update gradlew permissions
           command: sudo chmod +x gradlew
@@ -76,12 +105,16 @@ jobs:
       - store_artifacts:
           path: app/build/outputs/apk/release
 
-
 workflows:
   test-and-build-workflow:
     jobs:
-      - unit-test
+      - setup
+      - unit-test:
+          requires:
+            - setup
       - android-test:
+          requres:
+            - setup
           matrix:
             alias: android-test-all
             parameters:
