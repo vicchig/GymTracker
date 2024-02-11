@@ -30,6 +30,7 @@ jobs:
       - android/restore-gradle-cache # restore deps and build artifacts
       - android/run-tests:
           test-command: |
+            ls -a
             ./GymTrackerApp/gradlew testDebug
       - android/save-gradle-cache
       - run:
@@ -115,7 +116,7 @@ workflows:
   test-and-release-workflow:
     jobs:
         - unit-test
-        
+
         - android-test:
             matrix:
               alias: android-test-all
