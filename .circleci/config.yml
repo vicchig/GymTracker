@@ -30,11 +30,13 @@ jobs:
     
     steps:
       - setup-repo
+      - run:
+          name: Change dir to GymTrackerApp
+          command: cd ./GymTrackerApp
+
       - android/restore-gradle-cache # restore deps and build artifacts
       - android/run-tests:
-          test-command: |
-            pwd
-            ./gradlew testDebug
+          test-command: ./gradlew testDebug
       - android/save-gradle-cache
       - run:
           name: Save unit test results
