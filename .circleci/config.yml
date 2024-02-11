@@ -113,7 +113,7 @@ workflows:
           requires:
             - setup
       - android-test:
-          requres:
+          requires:
             - setup
           matrix:
             alias: android-test-all

@@ -1,0 +1,66 @@
+version: "2"
+
+checks:
+  argument-count:
+    config:
+      threshold: 6
+  
+  complex-logic:
+    config:
+      threshold: 4
+
+  file-lines:
+    enabled: false
+
+  method-complexity:
+    config:
+      threshold: 5
+
+  method-count:
+    config:
+      threshold: 20
+
+  method-lines:
+    config:
+      threshold: 100
+
+  nested-control-flow:
+    config:
+      threshold: 4
+
+  return-statememts:
+    config:
+      threshold: 4
+
+plugins:
+  Duplication:
+    enabled: true
+  SonarJava:
+    enabled: true
+    config:
+      sonar.java.source: "8"
+  Structure:
+    enabled: true
+
+exclude_patterns:
+  "config/"
+  "db/"
+  "dist/"
+  "features/"
+  "**/node_modules/"
+  "script/"
+  "**/spec/"
+  "**/test/"
+  "**/tests/"
+  "Tests/"
+  "**/vendor/"
+  "**/*_test.go"
+  "**/*.d.ts"
+  ".circleci"
+  ".git"
+  ".idea"
+  "*gradle"
+  "app/src/androidTest"
+  "app/src/test"
+
+
