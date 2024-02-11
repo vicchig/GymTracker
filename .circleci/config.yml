@@ -9,12 +9,14 @@ default-keys: &default-keys
 
 
 commands:
-  prepare-for-tests:
+  setup-repo:
     steps:
       - checkout
       - run:
           name: Update gradlew script permissions
-          command: sudo chmod +x ./GymTrackerApp/gradlew
+          command: |
+            cd ./GymTrackerApp
+            sudo chmod +x ./gradlew
 
 
   
@@ -27,17 +29,10 @@ jobs:
       resource-class: large
     
     steps:
-      - prepare-for-tests
+      - setup-repo
       - android/restore-gradle-cache # restore deps and build artifacts
-      - run:
-          name: Check dirs
-          command: |
-            ls -a
-            ls ../ -a
-            ls ./GymTrackerApp -a
       - android/run-tests:
-          test-command: |
-            ./GymTrackerApp/gradlew testDebug
+          test-command: ./gradlew testDebug
       - android/save-gradle-cache
       - run:
           name: Save unit test results
@@ -64,9 +59,9 @@ jobs:
       tag: 2024.01.1-ndk
 
     steps:
-      - prepare-for-tests
+      - setup-repo
       - android/start-emulator-and-run-tests:
-          test-command: ./GymTrackerApp/gradlew connectedDebugAndroidTest
+          test-command: ./gradlew connectedDebugAndroidTest
           system-image: << parameters.system-image >>
       - run:
           name: Save test results
@@ -85,14 +80,12 @@ jobs:
       resource-class: large
       tag: 2024.01.1-ndk
     steps:
-      - checkout
+      - setup-repo
       - android/restore-gradle-cache
       - android/restore-build-cache
       - run:
           name: Assemble release build
-          command: |
-            sudo chmod +x ./GymTrackerApp/gradlew
-            ./gradlew assembleRelease
+          command: ./gradlew assembleRelease
       - store_artifacts:
           path: app/build/outputs/apk/release
 
