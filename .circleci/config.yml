@@ -3,22 +3,23 @@ version: 2.1
 orbs:
   android: circleci/android@2.4.0
 
+
 default-keys: &default-keys
   working_directory: ~/repo
 
-setup-common:
-  <<: *default-keys
-  executor:
-    name: android/android-docker
-    tag: 2024.01.1-ndk
-  steps:
-    - checkout
-    - run:
-        name: Running check repo dir structure command
-        command: ls -a
-
   
 jobs:
+  setup-common:
+    <<: *default-keys
+    executor:
+      name: android/android-docker
+      tag: 2024.01.1-ndk
+    steps:
+      - checkout
+      - run:
+          name: Running check repo dir structure command
+          command: ls -a
+
   unit-test:
     <<: *default-keys
     executor: # comes from the orb
