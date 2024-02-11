@@ -36,6 +36,7 @@ jobs:
           command: | 
             ls -a
             ls ../ -a
+            ls ../repo -a
       - android/run-tests:
           test-command: |
             ./GymTrackerApp/gradlew testDebug
@@ -104,8 +105,5 @@ jobs:
 workflows:
   test-and-build-workflow:
     jobs:
-      - setup-common
-      - unit-test:
-          requires:
-            - setup-common
+      - unit-test
       
