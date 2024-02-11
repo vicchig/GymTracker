@@ -32,7 +32,9 @@ jobs:
       - setup-repo
       - android/restore-gradle-cache # restore deps and build artifacts
       - android/run-tests:
-          test-command: ./gradlew testDebug
+          test-command: |
+            pwd
+            ./gradlew testDebug
       - android/save-gradle-cache
       - run:
           name: Save unit test results
