@@ -19,6 +19,9 @@ jobs:
       - run:
           name: Running check repo dir structure command
           command: ls -a
+      - run:
+          name: Update gradle script permissions
+          command: sudo chmod +x ./GymTrackerApp/gradlew
 
   unit-test:
     <<: *default-keys
@@ -27,11 +30,10 @@ jobs:
       tag: 2024.01.1-ndk
     
     steps:
-      - checkout
       - android/restore-gradle-cache # restore deps and build artifacts
       - run:
-          name: update gradlew permissions
-          command: sudo chmod +x ./GymTrackerApp/gradlew
+          name: check dir
+          command: ls -a
       - android/run-tests:
           test-command: |
             ./GymTrackerApp/gradlew testDebug
@@ -101,5 +103,7 @@ workflows:
   test-and-build-workflow:
     jobs:
       - setup-common
-      - unit-test
+      - unit-test:
+          requires:
+            - setup-common
       
