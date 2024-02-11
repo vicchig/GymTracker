@@ -90,5 +90,5 @@ jobs:
 workflows:
   test-and-build-workflow:
     jobs:
-      - unit-test:
+      - unit-test
 
