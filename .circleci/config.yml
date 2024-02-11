@@ -33,7 +33,9 @@ jobs:
       - android/restore-gradle-cache # restore deps and build artifacts
       - run:
           name: check dir
-          command: ls -a
+          command: | 
+            ls -a
+            ls ../ -a
       - android/run-tests:
           test-command: |
             ./GymTrackerApp/gradlew testDebug
