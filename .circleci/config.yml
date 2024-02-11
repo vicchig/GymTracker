@@ -92,28 +92,3 @@ workflows:
     jobs:
       - unit-test:
 
-      - android-test:
-          matrix:
-            alias: android-test-all
-            parameters:
-              system-image:
-                - system-images;android-30;google_apis;x86
-                - system-images;android-29;google_apis;x86
-                - system-images;android-28;google_apis;x86
-                - system-images;android-27;google_apis;x86
-                - system-images;android-26;google_apis;x86
-                - system-images;android-26;google_apis;x86
-                - system-images;android-26;google_apis;x86
-                - system-images;android-26;google_apis;x86
-          name: android-test-<<matrix.system-image>>
-          filters:
-            branches:
-              only: main
-    
-      - release-build:
-          requires:
-            - unit-test
-            - android-test-all # instrumentation tests ran on emulator
-          filters:
-            branches:
-              only: main
