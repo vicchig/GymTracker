@@ -101,3 +101,5 @@ workflows:
   test-and-build-workflow:
     jobs:
       - setup-common
+      - unit-test
+      
