@@ -24,13 +24,19 @@ jobs:
     executor: # comes from the orb
       name: android/android-docker
       tag: 2024.01.1-ndk
+      resource-class: large
     
     steps:
       - prepare-for-tests
       - android/restore-gradle-cache # restore deps and build artifacts
+      - run:
+          name: Check dirs
+          command: |
+            ls -a
+            ls ../ -a
+            ls ./GymTrackerApp -a
       - android/run-tests:
           test-command: |
-            ls -a
             ./GymTrackerApp/gradlew testDebug
       - android/save-gradle-cache
       - run:
