@@ -30,12 +30,9 @@ jobs:
     
     steps:
       - setup-repo
-      - run:
-          name: Change dir to GymTrackerApp
-          command: cd ./GymTrackerApp
-
       - android/restore-gradle-cache # restore deps and build artifacts
       - android/run-tests:
+          working-directory: ./GymTrackerApp
           test-command: ./gradlew testDebug
       - android/save-gradle-cache
       - run:
@@ -66,6 +63,7 @@ jobs:
       - setup-repo
       - android/start-emulator-and-run-tests:
           test-command: ./gradlew connectedDebugAndroidTest
+          run-tests-working-directory: ./GymTrackerApp
           system-image: << parameters.system-image >>
       - run:
           name: Save test results
@@ -89,9 +87,9 @@ jobs:
       - android/restore-build-cache
       - run:
           name: Assemble release build
-          command: ./gradlew assembleRelease
+          command: ./GymTrackerApp/gradlew assembleRelease
       - store_artifacts:
-          path: app/build/outputs/apk/release
+          path: ./GymTrackerApp/app/build/outputs/apk/release
 
 workflows:
   test-workflow:
