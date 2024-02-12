@@ -79,7 +79,6 @@ jobs:
   release-build:
     executor:
       name: android/android-machine
-      resource-class: large
       tag: 2024.01.1-ndk
     steps:
       - setup-repo
