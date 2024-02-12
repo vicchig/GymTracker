@@ -3,19 +3,21 @@ version: 2.1
 orbs:
   android: circleci/android@2.4.0
 
-default-keys: &default-keys
-  working_directory: ~/repo
 
-setup-common:
-  <<: *default-keys
-  executor:
-    name: android/android-docker
-    tag: 2024.01.1-ndk
-  steps:
-    - checkout
-    - run:
-        name: Running check repo dir structure command
-        command: ls -a
+default-keys: &default-keys
+  working_directory: ~/job-main-dir
+
+
+commands:
+  setup-repo:
+    steps:
+      - checkout
+      - run:
+          name: Update gradlew script permissions
+          command: |
+            cd ./GymTrackerApp
+            sudo chmod +x ./gradlew
+
 
   
 jobs:
@@ -24,16 +26,14 @@ jobs:
     executor: # comes from the orb
       name: android/android-docker
       tag: 2024.01.1-ndk
+      resource-class: large
     
     steps:
-      - checkout
+      - setup-repo
       - android/restore-gradle-cache # restore deps and build artifacts
-      - run:
-          name: update gradlew permissions
-          command: sudo chmod +x ./GymTrackerApp/gradlew
       - android/run-tests:
-          test-command: |
-            ./GymTrackerApp/gradlew testDebug
+          working-directory: ./GymTrackerApp
+          test-command: ./gradlew testDebug
       - android/save-gradle-cache
       - run:
           name: Save unit test results
@@ -56,17 +56,13 @@ jobs:
 
     executor:
       name: android/android-machine
-      resource-class: large #change to xlarge if not enough/too slow
       tag: 2024.01.1-ndk
 
     steps:
-      - checkout
-
-      - run:
-          name: update gradlew permissions
-          command: sudo chmod +x ./GymTrackerApp/gradlew
+      - setup-repo
       - android/start-emulator-and-run-tests:
-          test-command: ./GymTrackerApp/gradlew connectedDebugAndroidTest
+          test-command: ./gradlew connectedDebugAndroidTest
+          run-tests-working-directory: ./GymTrackerApp
           system-image: << parameters.system-image >>
       - run:
           name: Save test results
@@ -82,21 +78,70 @@ jobs:
   release-build:
     executor:
       name: android/android-machine
-      resource-class: large
       tag: 2024.01.1-ndk
     steps:
-      - checkout
+      - setup-repo
       - android/restore-gradle-cache
       - android/restore-build-cache
       - run:
           name: Assemble release build
-          command: |
-            sudo chmod +x ./GymTrackerApp/gradlew
-            ./gradlew assembleRelease
+          command: ./GymTrackerApp/gradlew assembleRelease
       - store_artifacts:
-          path: app/build/outputs/apk/release
+          path: ./GymTrackerApp/app/build/outputs/apk/release
 
 workflows:
-  test-and-build-workflow:
+  test-workflow:
     jobs:
-      - setup-common
+        - unit-test
+
+        - android-test:
+            matrix:
+              alias: android-test-all
+              parameters:
+                system-image:
+                  - system-images;android-30;google_apis;x86
+                  - system-images;android-29;google_apis;x86
+                  - system-images;android-28;google_apis;x86
+                  - system-images;android-27;google_apis;x86
+                  - system-images;android-26;google_apis;x86
+                  - system-images;android-26;google_apis;x86
+                  - system-images;android-26;google_apis;x86
+                  - system-images;android-26;google_apis;x86
+            name: android-test-<<matrix.system-image>>
+            filters:
+              branches:
+                only: stg
+
+  test-and-release-workflow:
+    jobs:
+        - unit-test:
+            filters:
+                branches:
+                  only: master
+
+        - android-test:
+            matrix:
+              alias: android-test-all
+              parameters:
+                system-image:
+                  - system-images;android-30;google_apis;x86
+                  - system-images;android-29;google_apis;x86
+                  - system-images;android-28;google_apis;x86
+                  - system-images;android-27;google_apis;x86
+                  - system-images;android-26;google_apis;x86
+                  - system-images;android-26;google_apis;x86
+                  - system-images;android-26;google_apis;x86
+                  - system-images;android-26;google_apis;x86
+            name: android-test-<<matrix.system-image>>
+            filters:
+              branches:
+                only: master
+
+        - release-build:
+            requires:
+              - unit-test
+              - android-test-all # instrumentation tests ran on emulator
+            filters:
+              branches:
+                only: master
+      
