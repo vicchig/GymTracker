@@ -56,7 +56,6 @@ jobs:
 
     executor:
       name: android/android-machine
-      resource-class: large #change to xlarge if not enough/too slow
       tag: 2024.01.1-ndk
 
     steps:
@@ -115,7 +114,10 @@ workflows:
 
   test-and-release-workflow:
     jobs:
-        - unit-test
+        - unit-test:
+            filters:
+                branches:
+                  only: master
 
         - android-test:
             matrix:
@@ -131,6 +133,9 @@ workflows:
                   - system-images;android-26;google_apis;x86
                   - system-images;android-26;google_apis;x86
             name: android-test-<<matrix.system-image>>
+            filters:
+              branches:
+                only: master
 
         - release-build:
             requires:
