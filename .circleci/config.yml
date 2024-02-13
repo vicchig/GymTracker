@@ -44,7 +44,7 @@ jobs:
       - run:
           name: check output dirs
           command: |
-            ls -a ./GymTrackerApp/app/build/reports
+            ls -a ./GymTrackerApp/app/build/reports/tests
 
       - store_test_results:
           path: ~/test-results
