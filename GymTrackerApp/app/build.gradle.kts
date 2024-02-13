@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("org.jetbrains.kotlinx.kover") version "0.7.5"
 }
 
 android {
@@ -66,4 +67,29 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+}
+
+koverReport{
+    verify{
+        rule{
+            isEnabled = true
+
+            entity = kotlinx.kover.gradle.plugin.dsl.GroupingEntityType.APPLICATION
+
+            bound{
+                minValue = 0
+                maxValue = 100
+                metric = kotlinx.kover.gradle.plugin.dsl.MetricType.LINE
+                aggregation = kotlinx.kover.gradle.plugin.dsl.AggregationType.COVERED_PERCENTAGE
+            }
+        }
+
+        filters{
+            excludes{
+                annotatedBy("*Generated*", "*Composable*")
+                packages("com.example.gymtracker.ui.theme")
+                classes("*ComposableSingletons*")
+            }
+        }
+    }
 }
