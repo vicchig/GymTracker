@@ -28,7 +28,7 @@ checks:
     config:
       threshold: 4
 
-  return-statememts:
+  return-statements:
     config:
       threshold: 4
 
@@ -43,24 +43,24 @@ plugins:
     enabled: true
 
 exclude_patterns:
-  "config/"
-  "db/"
-  "dist/"
-  "features/"
-  "**/node_modules/"
-  "script/"
-  "**/spec/"
-  "**/test/"
-  "**/tests/"
-  "Tests/"
-  "**/vendor/"
-  "**/*_test.go"
-  "**/*.d.ts"
-  ".circleci"
-  ".git"
-  ".idea"
-  "*gradle"
-  "app/src/androidTest"
-  "app/src/test"
+  ["config/",
+  "db/",
+  "dist/",
+  "features/",
+  "**/node_modules/",
+  "script/",
+  "**/spec/",
+  "**/test/",
+  "**/tests/",
+  "Tests/",
+  "**/vendor/",
+  "**/*_test.go",
+  "**/*.d.ts",
+  ".circleci",
+  ".git",
+  ".idea",
+  "*gradle",
+  "app/src/androidTest",
+  "app/src/test"]
 
 

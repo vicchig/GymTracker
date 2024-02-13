@@ -2,11 +2,13 @@ version: 2.1
 
 orbs:
   android: circleci/android@2.4.0
+  codecov: codecov/codecov@4.0.1
 
 
 default-keys: &default-keys
   working_directory: ~/job-main-dir
-
+  environment:
+    CODECOV_TOKEN: 869a189b-7a63-4e0e-86d9-2fb70ae29926
 
 commands:
   setup-repo:
@@ -41,10 +43,22 @@ jobs:
             mkdir -p ~/test-results/junit/
             find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/test-results/junit/ \;
           when: always
+
+      - run:
+          name: Create coverage report
+          command: ./gradlew koverXmlReportDebug
+
+      - codecov/upload:
+          file: "./GymTracker/GymTrackerApp/app/build/reports/kover/reportDebug.xml"
+
       - store_test_results:
           path: ~/test-results
       - store_artifacts:
           path: ~/test-results/junit
+      - store_artifacts:
+          path: ./GymTrackerApp/app/build/reports/tests/testDebugUnitTests/index.html
+      - store_artifacts:
+          path: ./GymTracker/GymTrackerApp/app/build/reports/kover/reportDebug.xml
 
   # for instrumentation tests
   android-test:

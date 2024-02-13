@@ -82,14 +82,13 @@ koverReport{
                 metric = kotlinx.kover.gradle.plugin.dsl.MetricType.LINE
                 aggregation = kotlinx.kover.gradle.plugin.dsl.AggregationType.COVERED_PERCENTAGE
             }
-
-            minBound(0)
         }
 
         filters{
             excludes{
                 annotatedBy("*Generated*", "*Composable*")
                 packages("com.example.gymtracker.ui.theme")
+                classes("*ComposableSingletons*")
             }
         }
     }
