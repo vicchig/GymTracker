@@ -46,10 +46,10 @@ jobs:
 
       - run:
           name: Create coverage report
-          command: ./gradlew koverXmlReportDebug
+          command: ./GymTrackerApp/gradlew koverXmlReportDebug
 
       - codecov/upload:
-          file: "./GymTracker/GymTrackerApp/app/build/reports/kover/reportDebug.xml"
+          file: "./GymTrackerApp/app/build/reports/kover/reportDebug.xml"
 
       - store_test_results:
           path: ~/test-results
@@ -58,7 +58,7 @@ jobs:
       - store_artifacts:
           path: ./GymTrackerApp/app/build/reports/tests/testDebugUnitTests/index.html
       - store_artifacts:
-          path: ./GymTracker/GymTrackerApp/app/build/reports/kover/reportDebug.xml
+          path: ./GymTrackerApp/app/build/reports/kover/reportDebug.xml
 
   # for instrumentation tests
   android-test:
