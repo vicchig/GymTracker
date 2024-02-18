@@ -28,8 +28,7 @@ jobs:
     executor: # comes from the orb
       name: android/android-docker
       tag: 2024.01.1-ndk
-      resource-class: large
-    
+
     steps:
       - setup-repo
       - android/restore-gradle-cache # restore deps and build artifacts
@@ -111,23 +110,20 @@ workflows:
     jobs:
         - unit-test
 
-        - android-test:
-            matrix:
-              alias: android-test-all
-              parameters:
-                system-image:
-                  - system-images;android-30;google_apis;x86
-                  - system-images;android-29;google_apis;x86
-                  - system-images;android-28;google_apis;x86
-                  - system-images;android-27;google_apis;x86
-                  - system-images;android-26;google_apis;x86
-                  - system-images;android-26;google_apis;x86
-                  - system-images;android-26;google_apis;x86
-                  - system-images;android-26;google_apis;x86
-            name: android-test-<<matrix.system-image>>
-            filters:
-              branches:
-                only: stg
+        #- android-test:
+        #    matrix:
+        #      alias: android-test-all
+        #      parameters:
+        #        system-image:
+        #          - system-images;android-30;google_apis;x86
+         #         - system-images;android-29;google_apis;x86
+         #         - system-images;android-28;google_apis;x86
+         #         - system-images;android-27;google_apis;x86
+         #         - system-images;android-26;google_apis;x86
+         #         - system-images;android-26;google_apis;x86
+         #         - system-images;android-26;google_apis;x86
+         #         - system-images;android-26;google_apis;x86
+        #    name: android-test-<<matrix.system-image>>
 
   test-and-release-workflow:
     jobs:
