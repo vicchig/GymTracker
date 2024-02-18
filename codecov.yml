@@ -1,2 +1,11 @@
 codecov:
   branch: stable
+
+coverage:
+  status:
+    project:
+      default:
+        target: 30
+        threshold: 0
+        only_pulls: true 
+        
