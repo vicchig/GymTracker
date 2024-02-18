@@ -46,7 +46,10 @@ jobs:
 
       - run:
           name: Create coverage report
-          command: ./GymTrackerApp/gradlew koverXmlReportDebug
+
+          command: |
+            cd ./GymTrackerApp
+            ./gradlew koverXmlReportDebug
 
       - codecov/upload:
           file: "./GymTrackerApp/app/build/reports/kover/reportDebug.xml"
